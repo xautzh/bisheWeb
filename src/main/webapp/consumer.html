@@ -1,0 +1,57 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<title>SupremeMQ消息中间件消费者详情监测页</title>
+	<link rel="stylesheet" href="css/style.css" type="text/css">
+</head>
+
+<body>
+
+<div id="container">   
+
+	<table class="zebra">
+    <caption>SupremeMQ消息中间件消费者详情监测页</caption>
+        	<tr>
+				<th>消息队列名称</th>
+				<th>消费者ID</th>
+				<th>该消费者创建时间</th>
+            </tr>
+	</table>
+</div>
+<script src="jquery/jquery-3.1.1.min.js"></script>
+<script type="text/javascript">
+    window.onload = function(){
+        let url = window.location.href.split('=');
+        var postData = {"queueName":url[1]};
+        console.log(postData);
+        $.ajax({
+            type: "POST",
+            url: "http://localhost:9090/index/consumerData",
+			data:JSON.stringify(postData),
+            dataType: "json",
+            contentType: "application/json; charset=utf-8",
+            success: function(data){
+                console.log(data.consumerResult);
+                tableLoad(data.consumerResult);
+            }
+        });
+        function tableLoad(page) {
+            var table = document.getElementsByTagName('table')[0];
+            for (var i = 0; page.length > i; i++) {
+                var tr = table.insertRow(table.rows.length);
+                var obj = page[i];
+                for(var p in obj){
+                    if(p=='waitingMessageNumber'){
+                        break;
+                    }
+                    var td = tr.insertCell(tr.cells.length);
+                    td.innerText = obj[p];
+                }
+            }
+        }
+    }
+</script>
+    
+</body>
+</html>

@@ -1,0 +1,76 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <title>SupremeMQ消息中间件监测页</title>
+    <link rel="stylesheet" href="css/style.css" type="text/css">
+</head>
+
+<body>
+
+<div id="container">
+
+    <table class="zebra">
+        <caption>SupremeMQ消息中间件监测页</caption>
+        <tr>
+            <th>消息队列名称</th>
+            <th>未消费的消息数量</th>
+            <th>消费者数量</th>
+            <th>查看详情</th>
+        </tr>
+    </table>
+</div>
+<script src="jquery/jquery-3.1.1.min.js"></script>
+<script type="text/javascript">
+    window.onload = function () {
+        $.ajax({
+            type: "GET",
+            url: "http://localhost:9090/index/pageData",
+            dataType: "json",
+            contentType: "application/json; charset=utf-8",
+            success: function (data) {
+                tableLoad(data.queueResult);
+            }
+        });
+
+        function tableLoad(page) {
+            var name = new Array();
+            var table = document.getElementsByTagName('table')[0];
+            for (var i = 0; page.length > i; i++) {
+                var tr = table.insertRow(table.rows.length);
+                var obj = page[i];
+                name[i] = page[i].queueName;
+                console.log(name);
+                for (var p in obj) {
+                    if (p == 'waitingMessageNumber') {
+                        //这里加链接
+                        var td = tr.insertCell(tr.cells.length);
+                        td.innerHTML = '<a href="#">查看消费者详情</a>,<a href="#">查看消息详情</a>';
+                        console.log("最后一个表格" + name);
+                        // document.getElementById("consumer").href = "consumer.html?queueName="+name;
+                        break;
+                    }
+                    var td = tr.insertCell(tr.cells.length);
+                    td.innerText = obj[p];
+                }
+            }
+            var t = document.getElementsByTagName("a"), len = t.length;
+            console.log("url个数:" + len);
+            var names = name;
+            var k = 0;
+            var m = 0;
+            for (var i = 1; i <= len; i++) {
+                if (i % 2 != 0) {
+                    t[i - 1].href = "consumer.html?queueName=" + name[k++];
+                } else {
+                    t[i - 1].href = "message.html?queueName=" + names[m++];
+                }
+            }
+        }
+    }
+</script>
+
+
+</body>
+</html>
